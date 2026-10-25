@@ -22,3 +22,4 @@ appsettings.Development.json
 # Local application settings containing credentials
 appsettings.json
 appsettings.Development.json
+appsettings.json
