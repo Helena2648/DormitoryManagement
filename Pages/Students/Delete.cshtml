@@ -1,0 +1,63 @@
+
+@page "{id:int}"
+@model DormitoryManagement.Pages.Students.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete Student";
+}
+
+<div class="container py-4">
+    <h1 class="fw-bold text-danger">Delete Student</h1>
+    <p class="text-secondary">Review the student details before attempting deletion.</p>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body p-4">
+            <h2 class="h5 mb-3">Student Details</h2>
+
+            <dl class="row">
+                <dt class="col-sm-3">Student ID</dt>
+                <dd class="col-sm-9">@Model.Student.StudentId</dd>
+
+                <dt class="col-sm-3">Full Name</dt>
+                <dd class="col-sm-9">@Model.Student.StudentName</dd>
+
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@(Model.Student.Email ?? "—")</dd>
+
+                <dt class="col-sm-3">Phone</dt>
+                <dd class="col-sm-9">@(Model.Student.Phone ?? "—")</dd>
+            </dl>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger" role="alert">
+                    <h5 class="alert-heading">Cannot Delete Student</h5>
+                    <div asp-validation-summary="All"></div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    Are you sure you want to permanently delete this student?
+                    This action cannot be undone.
+                </div>
+            }
+
+            <form method="post">
+                <input type="hidden" asp-for="Student.StudentId" />
+
+                @if (ViewData.ModelState.IsValid)
+                {
+                    <button type="submit" class="btn btn-danger">
+                        Yes, Delete Student
+                    </button>
+                }
+
+                <a asp-page="/Students/Index"
+                   class="btn btn-outline-secondary ms-2">
+                    Back to Student List
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,92 @@
+
+@page
+@model DormitoryManagement.Pages.Payments.DeletePaymentModel
+
+@{
+    ViewData["Title"] = "Delete Payment";
+}
+
+<div class="container mt-4">
+    <h2 class="text-danger">Delete Payment</h2>
+    <p class="text-muted">
+        Please review the payment details before deleting this record.
+    </p>
+
+    @if (Model.Payment != null)
+    {
+        <div class="alert alert-warning">
+            <strong>Warning:</strong>
+            This action cannot be undone.
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                Payment #@Model.Payment.PaymentId
+            </div>
+
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Room ID</dt>
+                    <dd class="col-sm-8">@Model.Payment.RoomId</dd>
+
+                    <dt class="col-sm-4">Rental Fee</dt>
+                    <dd class="col-sm-8">
+                        @Model.Payment.RentalFee.ToString("N2")
+                    </dd>
+
+                    <dt class="col-sm-4">Water Fee</dt>
+                    <dd class="col-sm-8">
+                        @Model.Payment.WaterFee.ToString("N2")
+                    </dd>
+
+                    <dt class="col-sm-4">Electricity Fee</dt>
+                    <dd class="col-sm-8">
+                        @Model.Payment.ElectricityFee.ToString("N2")
+                    </dd>
+
+                    <dt class="col-sm-4">Total</dt>
+                    <dd class="col-sm-8 fw-bold">
+                        @Model.Total.ToString("N2")
+                    </dd>
+
+                    <dt class="col-sm-4">Payment Date</dt>
+                    <dd class="col-sm-8">
+                        @Model.Payment.PaymentDate.ToString("yyyy-MM-dd")
+                    </dd>
+
+                    <dt class="col-sm-4">Payment Method</dt>
+                    <dd class="col-sm-8">
+                        @Model.Payment.PaymentMethod
+                    </dd>
+
+                    <dt class="col-sm-4">Status</dt>
+                    <dd class="col-sm-8">
+                        @Model.Payment.PaymentStatus
+                    </dd>
+
+                    <dt class="col-sm-4">Notes</dt>
+                    <dd class="col-sm-8">
+                        @(string.IsNullOrWhiteSpace(Model.Payment.Notes)
+                            ? "—"
+                            : Model.Payment.Notes)
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <form method="post">
+            <input type="hidden"
+                   name="id"
+                   value="@Model.Payment.PaymentId" />
+
+            <button type="submit" class="btn btn-danger">
+                Confirm Delete
+            </button>
+
+            <a href="/Payments/PaymentList"
+               class="btn btn-secondary ms-2">
+                Cancel
+            </a>
+        </form>
+    }
+</div>

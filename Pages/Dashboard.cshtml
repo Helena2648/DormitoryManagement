@@ -1,0 +1,159 @@
+﻿
+@page "/"
+@model DormitoryManagement.Pages.DashboardModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid mt-4">
+    <div class="mb-4">
+        <h2>Dormitory Management Dashboard</h2>
+        <p class="text-muted">
+            Manage students, rooms, room assignments, and payments.
+        </p>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl">
+            <div class="card shadow-sm h-100 border-primary">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Students</h6>
+                    <h2 class="text-primary">@Model.TotalStudents</h2>
+                    <a href="/Students/Index"
+                       class="btn btn-outline-primary btn-sm">
+                        Student Management
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl">
+            <div class="card shadow-sm h-100 border-info">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Rooms</h6>
+                    <h2 class="text-info">@Model.TotalRooms</h2>
+                    <a href="/Rooms/RoomList"
+                       class="btn btn-outline-info btn-sm">
+                        Room Management
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl">
+            <div class="card shadow-sm h-100 border-success">
+                <div class="card-body">
+                    <h6 class="text-muted">Occupied Rooms</h6>
+                    <h2 class="text-success">@Model.OccupiedRooms</h2>
+                    <a href="/Rooms/RoomAssignments/AssignmentList"
+                       class="btn btn-outline-success btn-sm">
+                        Room Assignments
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl">
+            <div class="card shadow-sm h-100 border-warning">
+                <div class="card-body">
+                    <h6 class="text-muted">Available Rooms</h6>
+                    <h2 class="text-warning">@Model.AvailableRooms</h2>
+                    <a href="/Rooms/RoomList"
+                       class="btn btn-outline-warning btn-sm">
+                        View Rooms
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl">
+            <div class="card shadow-sm h-100 border-dark">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Payments</h6>
+                    <h2>@Model.TotalPayments.ToString("N2")</h2>
+                    <a href="/Payments/PaymentList"
+                       class="btn btn-outline-dark btn-sm">
+                        Payment Management
+                    </a>
+                    <a href="/Payments/PaymentReports" class="btn btn-outline-success">
+                        Payment Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Management Menu</h5>
+        </div>
+
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/Students/Index" class="btn btn-primary">
+                    Student Management
+                </a>
+
+                <a href="/Rooms/RoomList" class="btn btn-info">
+                    Room Management
+                </a>
+
+                <a href="/Rooms/RoomAssignments/AssignmentList"
+                   class="btn btn-success">
+                    Room Assignments
+                </a>
+
+                <a href="/Payments/PaymentList" class="btn btn-dark">
+                    Payment Management
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student List -->
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Registered Students</h5>
+
+            <a href="/Students/Index"
+               class="btn btn-outline-primary btn-sm">
+                View All Students
+            </a>
+        </div>
+
+        <div class="card-body">
+            @if (Model.Students.Count == 0)
+            {
+                <div class="alert alert-info mb-0">
+                    No students have been registered yet.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var student in Model.Students)
+                            {
+                                <tr>
+                                    <td>@student.StudentId</td>
+                                    <td>@student.StudentName</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

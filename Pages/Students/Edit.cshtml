@@ -1,0 +1,110 @@
+@page "{id:int}"
+@model DormitoryManagement.Pages.Students.EditModel
+
+@{
+    ViewData["Title"] = "Edit Student";
+}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold">Edit Student</h1>
+            <p class="text-secondary mb-0">
+                Update the student's information.
+            </p>
+        </div>
+
+        <a asp-page="/Students/Index"
+           class="btn btn-outline-secondary">
+            Back to Students
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <form method="post">
+                <input type="hidden" asp-for="Student.StudentId" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Student.StudentName"
+                           class="form-label">Full Name</label>
+                    <input asp-for="Student.StudentName"
+                           class="form-control" />
+                    <span asp-validation-for="Student.StudentName"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Student.DateOfBirth"
+                           class="form-label">Date of Birth</label>
+                    <input asp-for="Student.DateOfBirth"
+                           type="date"
+                           asp-format="{0:yyyy-MM-dd}"
+                           class="form-control" />
+                    <span asp-validation-for="Student.DateOfBirth"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Student.Gender"
+                           class="form-label">Gender</label>
+                    <select asp-for="Student.Gender"
+                            class="form-select">
+                        <option value="">Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span asp-validation-for="Student.Gender"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Student.Email"
+                           class="form-label">Email</label>
+                    <input asp-for="Student.Email"
+                           type="email"
+                           class="form-control" />
+                    <span asp-validation-for="Student.Email"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Student.Phone"
+                           class="form-label">Phone</label>
+                    <input asp-for="Student.Phone"
+                           class="form-control" />
+                    <span asp-validation-for="Student.Phone"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Student.Address"
+                           class="form-label">Address</label>
+                    <textarea asp-for="Student.Address"
+                              class="form-control"
+                              rows="3"></textarea>
+                    <span asp-validation-for="Student.Address"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        Save Changes
+                    </button>
+
+                    <a asp-page="/Students/Index"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

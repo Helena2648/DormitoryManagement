@@ -1,0 +1,157 @@
+
+@page
+@model DormitoryManagement.Pages.Payments.EditPaymentModel
+
+@{
+    ViewData["Title"] = "Edit Payment";
+}
+
+<div class="container py-4">
+    <div class="mb-4">
+        <h1 class="fw-bold">Edit Payment</h1>
+        <p class="text-secondary">
+            Update room rental fees and payment details.
+        </p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" asp-for="Payment.PaymentId" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.RoomId"
+                           class="form-label">Room</label>
+                    <select asp-for="Payment.RoomId"
+                            asp-items="Model.RoomOptions"
+                            class="form-select">
+                        <option value="">Select a room</option>
+                    </select>
+                    <span asp-validation-for="Payment.RoomId"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.RentalFee"
+                           class="form-label">Rental Fee</label>
+                    <input asp-for="Payment.RentalFee"
+                           type="number" step="0.01" min="0"
+                           class="form-control" />
+                    <span asp-validation-for="Payment.RentalFee"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.WaterFee"
+                           class="form-label">Water Fee</label>
+                    <input asp-for="Payment.WaterFee"
+                           type="number" step="0.01" min="0"
+                           class="form-control" />
+                    <span asp-validation-for="Payment.WaterFee"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.ElectricityFee"
+                           class="form-label">Electricity Fee</label>
+                    <input asp-for="Payment.ElectricityFee"
+                           type="number" step="0.01" min="0"
+                           class="form-control" />
+                    <span asp-validation-for="Payment.ElectricityFee"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Total</label>
+                    <input id="paymentTotal"
+                           class="form-control"
+                           value="0.00"
+                           readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.PaymentMethod"
+                           class="form-label">Payment Method</label>
+                    <select asp-for="Payment.PaymentMethod"
+                            class="form-select">
+                        <option value="Cash">Cash</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="PromptPay">PromptPay</option>
+                        <option value="Credit Card">Credit Card</option>
+                    </select>
+                    <span asp-validation-for="Payment.PaymentMethod"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.PaymentDate"
+                           class="form-label">Payment Date</label>
+                    <input asp-for="Payment.PaymentDate"
+                           type="date"
+                           class="form-control" />
+                    <span asp-validation-for="Payment.PaymentDate"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.PaymentStatus"
+                           class="form-label">Payment Status</label>
+                    <select asp-for="Payment.PaymentStatus"
+                            class="form-select">
+                        <option value="Paid">Paid</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Overdue">Overdue</option>
+                        <option value="Unpaid">Unpaid</option>
+                    </select>
+                    <span asp-validation-for="Payment.PaymentStatus"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.Notes"
+                           class="form-label">Notes (Optional)</label>
+                    <textarea asp-for="Payment.Notes"
+                              class="form-control"
+                              rows="3"></textarea>
+                    <span asp-validation-for="Payment.Notes"
+                          class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Save Changes
+                </button>
+
+                <a href="/Payments/PaymentList"
+                   class="btn btn-outline-secondary ms-2">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const rentalFee = document.getElementById("Payment_RentalFee");
+        const waterFee = document.getElementById("Payment_WaterFee");
+        const electricityFee = document.getElementById("Payment_ElectricityFee");
+        const total = document.getElementById("paymentTotal");
+
+        function updateTotal() {
+            const rental = Number(rentalFee.value) || 0;
+            const water = Number(waterFee.value) || 0;
+            const electricity = Number(electricityFee.value) || 0;
+
+            total.value = (rental + water + electricity).toFixed(2);
+        }
+
+        [rentalFee, waterFee, electricityFee].forEach(input => {
+            input.addEventListener("input", updateTotal);
+        });
+
+        updateTotal();
+    </script>
+}

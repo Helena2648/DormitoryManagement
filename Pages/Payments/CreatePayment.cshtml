@@ -1,0 +1,146 @@
+
+@page
+@model DormitoryManagement.Pages.Payments.CreatePaymentModel
+
+@{
+    ViewData["Title"] = "Add Payment";
+}
+
+<div class="container py-4">
+    <div class="mb-4">
+        <h1 class="fw-bold">Add Payment</h1>
+        <p class="text-secondary">
+            Record a room's rental and utility fees.
+        </p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                <div asp-validation-summary="All"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.RoomId"
+                           class="form-label">Room</label>
+
+                    <select asp-for="Payment.RoomId"
+                            asp-items="Model.RoomOptions"
+                            class="form-select">
+                        <option value="">Select a room</option>
+                    </select>
+
+                    <span asp-validation-for="Payment.RoomId"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.RentalFee"
+                           class="form-label">Rental Fee</label>
+
+                    <input asp-for="Payment.RentalFee"
+                           type="number"
+                           min="0"
+                           step="0.01"
+                           class="form-control" />
+
+                    <span asp-validation-for="Payment.RentalFee"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.WaterFee"
+                           class="form-label">Water Fee</label>
+
+                    <input asp-for="Payment.WaterFee"
+                           type="number"
+                           min="0"
+                           step="0.01"
+                           class="form-control" />
+
+                    <span asp-validation-for="Payment.WaterFee"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.ElectricityFee"
+                           class="form-label">Electricity Fee</label>
+
+                    <input asp-for="Payment.ElectricityFee"
+                           type="number"
+                           min="0"
+                           step="0.01"
+                           class="form-control" />
+
+                    <span asp-validation-for="Payment.ElectricityFee"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.PaymentMethod"
+                           class="form-label">Payment Method</label>
+
+                    <select asp-for="Payment.PaymentMethod"
+                            class="form-select">
+                        <option value="">Select a method</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Mobile Banking">Mobile Banking</option>
+                        <option value="Credit Card">Credit Card</option>
+                    </select>
+
+                    <span asp-validation-for="Payment.PaymentMethod"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.PaymentDate"
+                           class="form-label">Payment Date</label>
+
+                    <input asp-for="Payment.PaymentDate"
+                           type="date"
+                           class="form-control" />
+
+                    <span asp-validation-for="Payment.PaymentDate"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.PaymentStatus"
+                           class="form-label">Payment Status</label>
+
+                    <select asp-for="Payment.PaymentStatus"
+                            class="form-select">
+                        <option value="Paid">Paid</option>
+                        <option value="Unpaid">Unpaid</option>
+                        <option value="Partial">Partial</option>
+                    </select>
+
+                    <span asp-validation-for="Payment.PaymentStatus"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Payment.Notes"
+                           class="form-label">Notes (Optional)</label>
+
+                    <textarea asp-for="Payment.Notes"
+                              class="form-control"
+                              rows="3"></textarea>
+
+                    <span asp-validation-for="Payment.Notes"
+                          class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Save Payment
+                </button>
+
+                <a href="/Payments/PaymentList"
+                   class="btn btn-outline-secondary ms-2">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,174 @@
+@page
+@model DormitoryManagement.Pages.Students.IndexModel
+
+@{
+    ViewData["Title"] = "Student Management";
+}
+
+<div class="container py-4">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold">Student Management</h1>
+            <p class="text-secondary mb-0">
+                View, search, and manage registered dormitory students.
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-page="/Students/Create" class="btn btn-primary">
+                + Add Student
+            </a>
+
+            <a asp-page="/Index" class="btn btn-outline-secondary">
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Search and Filter Students</h2>
+        </div>
+
+        <div class="card-body">
+            <form method="get">
+                <div class="row g-3">
+
+                    <!-- Search by ID or Name -->
+                    <div class="col-12 col-md-7">
+                        <label for="SearchTerm" class="form-label">
+                            Search Student
+                        </label>
+
+                        <input type="text"
+                               id="SearchTerm"
+                               name="SearchTerm"
+                               value="@Model.SearchTerm"
+                               class="form-control"
+                               placeholder="Enter student ID or name" />
+                    </div>
+
+                    <!-- Room Assignment Filter -->
+                    <div class="col-12 col-md-5">
+                        <label for="AssignmentFilter" class="form-label">
+                            Room Assignment
+                        </label>
+
+                        <select id="AssignmentFilter"
+                                name="AssignmentFilter"
+                                class="form-select">
+
+                            <option value=""
+                                    selected="@(string.IsNullOrEmpty(Model.AssignmentFilter))">
+                                All Students
+                            </option>
+
+                            <option value="Assigned"
+                                    selected="@(Model.AssignmentFilter == "Assigned")">
+                                Currently Assigned
+                            </option>
+
+                            <option value="NotAssigned"
+                                    selected="@(Model.AssignmentFilter == "NotAssigned")">
+                                Not Assigned
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        Search / Filter
+                    </button>
+
+                    <a asp-page="/Students/Index"
+                       class="btn btn-outline-secondary">
+                        Reset Filters
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Student Records -->
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h5 mb-0">Registered Students</h2>
+
+            <span class="badge bg-secondary">
+                Records: @Model.Students.Count
+            </span>
+        </div>
+
+        <div class="card-body">
+
+            @if (Model.Students.Count == 0)
+            {
+                <div class="alert alert-info mb-0">
+                    No students match your search or filter criteria.
+                    Try changing your filters or select Reset Filters.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Date of Birth</th>
+                                <th>Gender</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var student in Model.Students)
+                            {
+                                <tr>
+                                    <td>@student.StudentId</td>
+
+                                    <td>@student.StudentName</td>
+
+                                    <td>
+                                        @(student.DateOfBirth?.ToString("dd MMM yyyy") ?? "—")
+                                    </td>
+
+                                    <td>@(student.Gender ?? "—")</td>
+
+                                    <td>@(student.Email ?? "—")</td>
+
+                                    <td>@(student.Phone ?? "—")</td>
+
+                                    <td class="text-nowrap">
+                                        <a asp-page="/Students/Edit"
+                                           asp-route-id="@student.StudentId"
+                                           class="btn btn-sm btn-outline-primary">
+                                            Edit
+                                        </a>
+
+                                        <a asp-page="/Students/Delete"
+                                           asp-route-id="@student.StudentId"
+                                           class="btn btn-sm btn-outline-danger ms-1">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

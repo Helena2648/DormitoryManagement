@@ -1,0 +1,106 @@
+
+@page "{id:int}"
+@model DormitoryManagement.Pages.Rooms.RoomAssignments.EditAssignmentModel
+
+@{
+    ViewData["Title"] = "Edit Room Assignment";
+}
+
+<div class="container py-4">
+    <h1 class="fw-bold mb-2">Edit Room Assignment</h1>
+    <p class="text-secondary mb-4">
+        Update a student's room assignment or record their checkout.
+    </p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                <div asp-validation-summary="All"
+                     class="text-danger mb-3"></div>
+
+                <input type="hidden" asp-for="Input.AssignmentId" />
+
+                <div class="mb-3">
+                    <label asp-for="Input.StudentId" class="form-label">
+                        Student
+                    </label>
+                    <select asp-for="Input.StudentId"
+                            asp-items="Model.StudentOptions"
+                            class="form-select">
+                        <option value="">Select a student</option>
+                    </select>
+                    <span asp-validation-for="Input.StudentId"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.RoomId" class="form-label">
+                        Room
+                    </label>
+                    <select asp-for="Input.RoomId"
+                            asp-items="Model.RoomOptions"
+                            class="form-select">
+                        <option value="">Select a room</option>
+                    </select>
+                    <span asp-validation-for="Input.RoomId"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.CheckInDate" class="form-label">
+                        Check-in Date
+                    </label>
+                    <input asp-for="Input.CheckInDate"
+                           type="date"
+                           class="form-control" />
+                    <span asp-validation-for="Input.CheckInDate"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.CheckOutDate" class="form-label">
+                        Check-out Date (Optional)
+                    </label>
+                    <input asp-for="Input.CheckOutDate"
+                           type="date"
+                           class="form-control" />
+                    <span asp-validation-for="Input.CheckOutDate"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Status" class="form-label">
+                        Status
+                    </label>
+                    <select asp-for="Input.Status" class="form-select">
+                        <option value="Active">Active</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                    <span asp-validation-for="Input.Status"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Notes" class="form-label">
+                        Notes (Optional)
+                    </label>
+                    <textarea asp-for="Input.Notes"
+                              class="form-control"
+                              rows="3"></textarea>
+                    <span asp-validation-for="Input.Notes"
+                          class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Save Changes
+                </button>
+
+                <a href="/Rooms/RoomAssignments/AssignmentList"
+                   class="btn btn-outline-secondary ms-2">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

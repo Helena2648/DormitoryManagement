@@ -1,0 +1,99 @@
+@page
+@model DormitoryManagement.Pages.Rooms.RoomAssignments.CreateAssignmentModel
+
+@{
+    ViewData["Title"] = "Create Room Assignment";
+}
+
+<div class="container py-4">
+    <h1 class="fw-bold mb-2">Create Room Assignment</h1>
+    <p class="text-secondary mb-4">
+        Assign a student to a dormitory room.
+    </p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                <div asp-validation-summary="All"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Assignment.StudentId" class="form-label">
+                        Student
+                    </label>
+                    <select asp-for="Assignment.StudentId"
+                            asp-items="Model.StudentOptions"
+                            class="form-select">
+                        <option value="">Select a student</option>
+                    </select>
+                    <span asp-validation-for="Assignment.StudentId"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Assignment.RoomId" class="form-label">
+                        Room
+                    </label>
+                    <select asp-for="Assignment.RoomId"
+                            asp-items="Model.RoomOptions"
+                            class="form-select">
+                        <option value="">Select a room</option>
+                    </select>
+                    <span asp-validation-for="Assignment.RoomId"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Assignment.CheckInDate" class="form-label">
+                        Check-in Date
+                    </label>
+                    <input asp-for="Assignment.CheckInDate"
+                           type="date"
+                           class="form-control" />
+                    <span asp-validation-for="Assignment.CheckInDate"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Assignment.CheckOutDate" class="form-label">
+                        Check-out Date (Optional)
+                    </label>
+                    <input asp-for="Assignment.CheckOutDate"
+                           type="date"
+                           class="form-control" />
+                    <span asp-validation-for="Assignment.CheckOutDate"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Assignment.Status" class="form-label">
+                        Status
+                    </label>
+                    <select asp-for="Assignment.Status" class="form-select">
+                        <option value="Active">Active</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Assignment.Notes" class="form-label">
+                        Notes (Optional)
+                    </label>
+                    <textarea asp-for="Assignment.Notes"
+                              class="form-control"
+                              rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Save Assignment
+                </button>
+
+                <a href="/Rooms/RoomAssignments/AssignmentList"
+                   class="btn btn-outline-secondary ms-2">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
