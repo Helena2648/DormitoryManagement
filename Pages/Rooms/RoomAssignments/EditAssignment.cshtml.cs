@@ -25,18 +25,19 @@ public class EditAssignmentModel : PageModel
     public AssignmentInput Input { get; set; } = new();
 
     public List<SelectListItem> StudentOptions { get; set; } = new();
+
     public List<SelectListItem> RoomOptions { get; set; } = new();
 
     public class AssignmentInput
     {
         public int AssignmentId { get; set; }
 
-        [Required(ErrorMessage = "Please select a student.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Please select a valid student.")]
+        [Range(1, int.MaxValue,
+            ErrorMessage = "Please select a valid student.")]
         public int StudentId { get; set; }
 
-        [Required(ErrorMessage = "Please select a room.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Please select a valid room.")]
+        [Range(1, int.MaxValue,
+            ErrorMessage = "Please select a valid room.")]
         public int RoomId { get; set; }
 
         [Required(ErrorMessage = "Check-in date is required.")]
@@ -61,7 +62,9 @@ public class EditAssignmentModel : PageModel
             .FirstOrDefaultAsync(a => a.AssignmentId == id);
 
         if (assignment == null)
+        {
             return NotFound();
+        }
 
         Input = new AssignmentInput
         {
@@ -74,7 +77,11 @@ public class EditAssignmentModel : PageModel
             Notes = assignment.Notes
         };
 
-        await LoadOptionsAsync();
+        await LoadOptionsAsync(
+            Input.StudentId,
+            Input.RoomId,
+            Input.AssignmentId);
+
         return Page();
     }
 
@@ -87,11 +94,17 @@ public class EditAssignmentModel : PageModel
                     a.AssignmentId == Input.AssignmentId);
 
             if (assignment == null)
+            {
                 return NotFound();
+            }
 
             if (!ModelState.IsValid)
             {
-                await LoadOptionsAsync();
+                await LoadOptionsAsync(
+                    Input.StudentId,
+                    Input.RoomId,
+                    Input.AssignmentId);
+
                 return Page();
             }
 
@@ -102,28 +115,20 @@ public class EditAssignmentModel : PageModel
                     "Input.CheckOutDate",
                     "Check-out date cannot be earlier than check-in date.");
 
-                await LoadOptionsAsync();
+                await LoadOptionsAsync(
+                    Input.StudentId,
+                    Input.RoomId,
+                    Input.AssignmentId);
+
                 return Page();
             }
 
-            bool studentExists = await _context.Students
-                .AnyAsync(s => s.StudentId == Input.StudentId);
-
-            var room = await _context.Rooms
-                .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.RoomId == Input.RoomId);
-
-            if (!studentExists || room == null)
+            string[] allowedStatuses =
             {
-                ModelState.AddModelError(
-                    string.Empty,
-                    "Please select a valid student and room.");
-
-                await LoadOptionsAsync();
-                return Page();
-            }
-
-            string[] allowedStatuses = { "Active", "Completed", "Cancelled" };
+                "Active",
+                "Completed",
+                "Cancelled"
+            };
 
             if (!allowedStatuses.Contains(Input.Status))
             {
@@ -131,12 +136,56 @@ public class EditAssignmentModel : PageModel
                     "Input.Status",
                     "Please select a valid assignment status.");
 
-                await LoadOptionsAsync();
+                await LoadOptionsAsync(
+                    Input.StudentId,
+                    Input.RoomId,
+                    Input.AssignmentId);
+
+                return Page();
+            }
+
+            var student = await _context.Students
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s =>
+                    s.StudentId == Input.StudentId);
+
+            var room = await _context.Rooms
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r =>
+                    r.RoomId == Input.RoomId);
+
+            if (student == null || room == null)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "Please select a valid student and room.");
+
+                await LoadOptionsAsync(
+                    Input.StudentId,
+                    Input.RoomId,
+                    Input.AssignmentId);
+
+                return Page();
+            }
+
+            // Inactive students cannot have active assignments.
+            if (Input.Status == "Active" && !student.IsActive)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "This student is inactive. Reactivate the student before creating an active room assignment.");
+
+                await LoadOptionsAsync(
+                    Input.StudentId,
+                    Input.RoomId,
+                    Input.AssignmentId);
+
                 return Page();
             }
 
             if (Input.Status == "Active")
             {
+                // A student may have only one active assignment.
                 bool studentHasAnotherActiveAssignment =
                     await _context.RoomAssignments.AnyAsync(a =>
                         a.StudentId == Input.StudentId &&
@@ -147,30 +196,40 @@ public class EditAssignmentModel : PageModel
                 {
                     ModelState.AddModelError(
                         string.Empty,
-                        "This student already has another active room assignment.");
+                        "This student already has another active room assignment. Complete or cancel it first.");
 
-                    await LoadOptionsAsync();
+                    await LoadOptionsAsync(
+                        Input.StudentId,
+                        Input.RoomId,
+                        Input.AssignmentId);
+
                     return Page();
                 }
 
+                // Exclude the current assignment from occupancy.
                 int activeOccupants = await _context.RoomAssignments
                     .CountAsync(a =>
                         a.RoomId == Input.RoomId &&
                         a.AssignmentId != Input.AssignmentId &&
                         a.Status == "Active");
 
-                if (activeOccupants >= room.Capacity)
+                if (room.Capacity <= 0 ||
+                    activeOccupants >= room.Capacity)
                 {
                     ModelState.AddModelError(
                         string.Empty,
-                        $"Room {room.RoomNumber} is full. " +
-                        $"Its capacity is {room.Capacity}.");
+                        $"Room {room.RoomNumber} is full or has no available capacity. Its capacity is {room.Capacity}.");
 
-                    await LoadOptionsAsync();
+                    await LoadOptionsAsync(
+                        Input.StudentId,
+                        Input.RoomId,
+                        Input.AssignmentId);
+
                     return Page();
                 }
             }
 
+            // Update the existing assignment, preserving its history.
             assignment.StudentId = Input.StudentId;
             assignment.RoomId = Input.RoomId;
             assignment.CheckInDate = Input.CheckInDate.Date;
@@ -188,39 +247,102 @@ public class EditAssignmentModel : PageModel
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to update room assignment.");
+            _logger.LogError(
+                ex,
+                "Failed to update room assignment.");
 
             ModelState.AddModelError(
                 string.Empty,
                 "Could not update the assignment: " +
                 ex.GetBaseException().Message);
 
-            await LoadOptionsAsync();
+            await LoadOptionsAsync(
+                Input.StudentId,
+                Input.RoomId,
+                Input.AssignmentId);
+
             return Page();
         }
     }
 
-    private async Task LoadOptionsAsync()
+    private async Task LoadOptionsAsync(
+        int selectedStudentId = 0,
+        int selectedRoomId = 0,
+        int assignmentId = 0)
     {
-        StudentOptions = await _context.Students
+        // Load students, keeping inactive students visible.
+        var students = await _context.Students
             .AsNoTracking()
             .OrderBy(s => s.StudentName)
-            .Select(s => new SelectListItem
+            .Select(s => new
             {
-                Value = s.StudentId.ToString(),
-                Text = s.StudentName
+                s.StudentId,
+                s.StudentName,
+                s.IsActive
             })
             .ToListAsync();
 
-        RoomOptions = await _context.Rooms
+        StudentOptions = students
+            .Select(s => new SelectListItem
+            {
+                Value = s.StudentId.ToString(),
+                Text = s.StudentName +
+                       (s.IsActive ? "" : " (Inactive)"),
+
+                // Keep the existing student's historical selection
+                // available, but disable other inactive students.
+                Disabled = !s.IsActive &&
+                           s.StudentId != selectedStudentId
+            })
+            .ToList();
+
+        // Calculate room occupancy without counting this assignment.
+        var rooms = await _context.Rooms
             .AsNoTracking()
             .OrderBy(r => r.RoomNumber)
-            .Select(r => new SelectListItem
+            .Select(r => new
             {
-                Value = r.RoomId.ToString(),
-                Text = r.RoomNumber + " (Capacity: " +
-                       r.Capacity.ToString() + ")"
+                r.RoomId,
+                r.RoomNumber,
+                r.Capacity,
+                ActiveOccupants = _context.RoomAssignments.Count(a =>
+                    a.RoomId == r.RoomId &&
+                    a.Status == "Active" &&
+                    a.AssignmentId != assignmentId)
             })
             .ToListAsync();
+
+        RoomOptions = rooms
+            .Select(r =>
+            {
+                int availableSpaces = Math.Max(
+                    0,
+                    r.Capacity - r.ActiveOccupants);
+
+                bool isCurrentRoom = r.RoomId == selectedRoomId;
+
+                return new SelectListItem
+                {
+                    Value = r.RoomId.ToString(),
+
+                    Text = $"Room {r.RoomNumber} — " +
+                           $"{r.ActiveOccupants}/{r.Capacity} occupied" +
+                           (r.Capacity > 0 &&
+                            r.ActiveOccupants < r.Capacity
+                               ? $", {r.Capacity - r.ActiveOccupants} " +
+                                 (r.Capacity - r.ActiveOccupants == 1
+                                     ? "space available"
+                                     : "spaces available")
+                               : ", FULL"),
+
+                    // Keep the current room selectable while editing,
+                    // even if it is currently full. Other full rooms
+                    // cannot be selected for an active assignment.
+                    Disabled = !isCurrentRoom &&
+                               (r.Capacity <= 0 ||
+                                r.ActiveOccupants >= r.Capacity)
+                };
+            })
+            .ToList();
     }
 }

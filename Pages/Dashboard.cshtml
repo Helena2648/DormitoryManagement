@@ -1,5 +1,4 @@
-﻿
-@page "/"
+﻿@page "/"
 @model DormitoryManagement.Pages.DashboardModel
 
 @{
@@ -16,12 +15,14 @@
 
     <!-- Summary Cards -->
     <div class="row g-3 mb-4">
+
+        <!-- Active Students -->
         <div class="col-12 col-sm-6 col-xl">
             <div class="card shadow-sm h-100 border-primary">
                 <div class="card-body">
-                    <h6 class="text-muted">Total Students</h6>
+                    <h6 class="text-muted">Active Students</h6>
                     <h2 class="text-primary">@Model.TotalStudents</h2>
-                    <a href="/Students/Index"
+                    <a href="/Students/Index?StatusFilter=Active"
                        class="btn btn-outline-primary btn-sm">
                         Student Management
                     </a>
@@ -29,6 +30,7 @@
             </div>
         </div>
 
+        <!-- Total Rooms -->
         <div class="col-12 col-sm-6 col-xl">
             <div class="card shadow-sm h-100 border-info">
                 <div class="card-body">
@@ -42,6 +44,7 @@
             </div>
         </div>
 
+        <!-- Occupied Rooms -->
         <div class="col-12 col-sm-6 col-xl">
             <div class="card shadow-sm h-100 border-success">
                 <div class="card-body">
@@ -55,6 +58,7 @@
             </div>
         </div>
 
+        <!-- Available Rooms -->
         <div class="col-12 col-sm-6 col-xl">
             <div class="card shadow-sm h-100 border-warning">
                 <div class="card-body">
@@ -68,21 +72,41 @@
             </div>
         </div>
 
+        <!-- Total Payments -->
         <div class="col-12 col-sm-6 col-xl">
             <div class="card shadow-sm h-100 border-dark">
                 <div class="card-body">
-                    <h6 class="text-muted">Total Payments</h6>
+                    <h6 class="text-muted">Total Payments Recorded</h6>
                     <h2>@Model.TotalPayments.ToString("N2")</h2>
                     <a href="/Payments/PaymentList"
                        class="btn btn-outline-dark btn-sm">
                         Payment Management
                     </a>
-                    <a href="/Payments/PaymentReports" class="btn btn-outline-success">
+                    <a href="/Payments/PaymentReports"
+                       class="btn btn-outline-success btn-sm mt-1">
                         Payment Reports
                     </a>
                 </div>
             </div>
         </div>
+
+        <!-- Unpaid Payments -->
+        <div class="col-12 col-sm-6 col-xl">
+            <div class="card shadow-sm h-100 border-danger">
+                <div class="card-body">
+                    <h6 class="text-muted">Unpaid Payments</h6>
+                    <h2 class="text-danger">@Model.UnpaidPayments</h2>
+                    <p class="small text-muted mb-2">
+                        Outstanding: @Model.UnpaidAmount.ToString("N2")
+                    </p>
+                    <a href="/Payments/PaymentList"
+                       class="btn btn-outline-danger btn-sm">
+                        View Payments
+                    </a>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- Quick Navigation -->
@@ -113,12 +137,12 @@
         </div>
     </div>
 
-    <!-- Student List -->
+    <!-- Registered Students -->
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Registered Students</h5>
 
-            <a href="/Students/Index"
+            <a href="/Students/Index?StatusFilter=All"
                class="btn btn-outline-primary btn-sm">
                 View All Students
             </a>
@@ -139,6 +163,7 @@
                             <tr>
                                 <th>Student ID</th>
                                 <th>Student Name</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
 
@@ -148,6 +173,20 @@
                                 <tr>
                                     <td>@student.StudentId</td>
                                     <td>@student.StudentName</td>
+                                    <td>
+                                        @if (student.IsActive)
+                                        {
+                                            <span class="badge bg-success">
+                                                Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                Inactive
+                                            </span>
+                                        }
+                                    </td>
                                 </tr>
                             }
                         </tbody>

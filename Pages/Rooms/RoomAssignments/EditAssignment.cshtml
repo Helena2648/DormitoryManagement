@@ -7,100 +7,141 @@
 }
 
 <div class="container py-4">
-    <h1 class="fw-bold mb-2">Edit Room Assignment</h1>
-    <p class="text-secondary mb-4">
-        Update a student's room assignment or record their checkout.
-    </p>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h1 class="fw-bold mb-2">Edit Room Assignment</h1>
+            <p class="text-secondary mb-0">
+                Update a student's room assignment or record their checkout.
+            </p>
+        </div>
+
+        <a asp-page="/Rooms/RoomAssignments/AssignmentList"
+           class="btn btn-outline-secondary">
+            Back to Assignments
+        </a>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body p-4">
+
             <form method="post">
+
                 <div asp-validation-summary="All"
                      class="text-danger mb-3"></div>
 
                 <input type="hidden" asp-for="Input.AssignmentId" />
 
+                <!-- Student -->
                 <div class="mb-3">
                     <label asp-for="Input.StudentId" class="form-label">
                         Student
                     </label>
+
                     <select asp-for="Input.StudentId"
                             asp-items="Model.StudentOptions"
                             class="form-select">
                         <option value="">Select a student</option>
                     </select>
+
+                    <div class="form-text">
+                        Inactive students are marked and cannot be selected for new active assignments.
+                    </div>
+
                     <span asp-validation-for="Input.StudentId"
                           class="text-danger"></span>
                 </div>
 
+                <!-- Room -->
                 <div class="mb-3">
                     <label asp-for="Input.RoomId" class="form-label">
                         Room
                     </label>
+
                     <select asp-for="Input.RoomId"
                             asp-items="Model.RoomOptions"
                             class="form-select">
                         <option value="">Select a room</option>
                     </select>
+
                     <span asp-validation-for="Input.RoomId"
                           class="text-danger"></span>
                 </div>
 
+                <!-- Check-in Date -->
                 <div class="mb-3">
                     <label asp-for="Input.CheckInDate" class="form-label">
                         Check-in Date
                     </label>
+
                     <input asp-for="Input.CheckInDate"
                            type="date"
                            class="form-control" />
+
                     <span asp-validation-for="Input.CheckInDate"
                           class="text-danger"></span>
                 </div>
 
+                <!-- Check-out Date -->
                 <div class="mb-3">
                     <label asp-for="Input.CheckOutDate" class="form-label">
                         Check-out Date (Optional)
                     </label>
+
                     <input asp-for="Input.CheckOutDate"
                            type="date"
                            class="form-control" />
+
                     <span asp-validation-for="Input.CheckOutDate"
                           class="text-danger"></span>
                 </div>
 
+                <!-- Assignment Status -->
                 <div class="mb-3">
                     <label asp-for="Input.Status" class="form-label">
-                        Status
+                        Assignment Status
                     </label>
+
                     <select asp-for="Input.Status" class="form-select">
                         <option value="Active">Active</option>
                         <option value="Completed">Completed</option>
                         <option value="Cancelled">Cancelled</option>
                     </select>
+
                     <span asp-validation-for="Input.Status"
                           class="text-danger"></span>
                 </div>
 
-                <div class="mb-3">
+                <!-- Notes -->
+                <div class="mb-4">
                     <label asp-for="Input.Notes" class="form-label">
                         Notes (Optional)
                     </label>
+
                     <textarea asp-for="Input.Notes"
                               class="form-control"
-                              rows="3"></textarea>
+                              rows="3"
+                              placeholder="Enter additional information..."></textarea>
+
                     <span asp-validation-for="Input.Notes"
                           class="text-danger"></span>
                 </div>
 
-                <button type="submit" class="btn btn-primary">
-                    Save Changes
-                </button>
+                <!-- Buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        Save Changes
+                    </button>
 
-                <a href="/Rooms/RoomAssignments/AssignmentList"
-                   class="btn btn-outline-secondary ms-2">
-                    Cancel
-                </a>
+                    <a asp-page="/Rooms/RoomAssignments/AssignmentList"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+                </div>
+
             </form>
+
         </div>
     </div>
+
 </div>

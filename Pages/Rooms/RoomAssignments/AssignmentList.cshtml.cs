@@ -1,4 +1,3 @@
-
 using DormitoryManagement.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -16,6 +15,12 @@ public class AssignmentListModel : PageModel
     }
 
     public List<AssignmentRow> Assignments { get; private set; } = new();
+
+    [BindProperty(SupportsGet = true)]
+    public string? SearchTerm { get; set; }
+
+    [BindProperty(SupportsGet = true)]
+    public string? StatusFilter { get; set; } = "All";
 
     public async Task OnGetAsync()
     {
@@ -53,13 +58,12 @@ public class AssignmentListModel : PageModel
 
     private async Task LoadAssignmentsAsync()
     {
-        Assignments = await (
+        var query =
             from assignment in _context.RoomAssignments.AsNoTracking()
             join student in _context.Students.AsNoTracking()
                 on assignment.StudentId equals student.StudentId
             join room in _context.Rooms.AsNoTracking()
                 on assignment.RoomId equals room.RoomId
-            orderby assignment.AssignmentId
             select new AssignmentRow
             {
                 AssignmentId = assignment.AssignmentId,
@@ -70,19 +74,62 @@ public class AssignmentListModel : PageModel
                 CheckInDate = assignment.CheckInDate,
                 CheckOutDate = assignment.CheckOutDate,
                 Status = assignment.Status
+            };
+
+        // Search by assignment ID, student ID, student name, or room number.
+        if (!string.IsNullOrWhiteSpace(SearchTerm))
+        {
+            string search = SearchTerm.Trim();
+
+            query = query.Where(a =>
+                a.StudentName.Contains(search) ||
+                a.RoomNumber.Contains(search) ||
+                a.AssignmentId.ToString() == search ||
+                a.StudentId.ToString() == search);
+        }
+
+        // Filter by assignment status.
+        if (!string.IsNullOrWhiteSpace(StatusFilter) &&
+            StatusFilter != "All")
+        {
+            if (StatusFilter == "Active" ||
+                StatusFilter == "Completed" ||
+                StatusFilter == "Cancelled")
+            {
+                query = query.Where(a => a.Status == StatusFilter);
             }
-        ).ToListAsync();
+            else
+            {
+                // Ignore unsupported status values.
+                StatusFilter = "All";
+            }
+        }
+        else
+        {
+            StatusFilter = "All";
+        }
+
+        Assignments = await query
+            .OrderByDescending(a => a.AssignmentId)
+            .ToListAsync();
     }
 
     public class AssignmentRow
     {
         public int AssignmentId { get; set; }
+
         public int StudentId { get; set; }
+
         public string StudentName { get; set; } = string.Empty;
+
         public int RoomId { get; set; }
+
         public string RoomNumber { get; set; } = string.Empty;
+
         public DateTime CheckInDate { get; set; }
+
         public DateTime? CheckOutDate { get; set; }
+
         public string Status { get; set; } = string.Empty;
     }
 }
